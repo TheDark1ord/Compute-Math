@@ -6,7 +6,6 @@ from tabulate import tabulate
 # Required absolute tolerance for solution
 EPS = 0.00001
 
-#Global values for functions
 
 def func(t, X):
     dX = np.zeros(X.shape)
