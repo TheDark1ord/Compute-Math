@@ -42,8 +42,8 @@ def get_cond(A: np.matrix):
 
 
 def construct(eps):
-    x_k = lambda k: 1 + np.cos(k) / np.power(np.sin(k), 2)
-    x_eps = lambda eps: 1 + np.cos(1) / np.power(np.sin(1 + eps), 2)
+    x_k = lambda k: (1 + np.cos(k)) / np.power(np.sin(k), 2)
+    x_eps = lambda eps: (1 + np.cos(1)) / np.power(np.sin(1 + eps), 2)
 
     A = np.matrix([[np.power(x_k(k), N) for k in range(1, 5)] for N in range(0, 4)])
 
@@ -57,7 +57,7 @@ def construct(eps):
 
 
 def main():
-    eps_arr = [0.001, 0.00001, 0.000001]
+    eps_arr = [0.1, 0.001, 0.00001, 0.000001]
     A_arr = [construct(eps) for eps in eps_arr]
 
     np.set_printoptions(linewidth=150)
