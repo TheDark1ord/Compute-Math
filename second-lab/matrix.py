@@ -14,8 +14,8 @@ def generate_random_matrix(n):
 
 def get_inverse(A: np.matrix):
     A_inv = np.zeros(A.shape)
-    E = np.identity(A.shape[0])
     P, L, U = lu(A)
+    E = np.identity(A.shape[0])
 
     for i in range(0, A.shape[0]):
         Ei = E[:, i]
@@ -24,14 +24,14 @@ def get_inverse(A: np.matrix):
         X = solve(U, Zi)
         A_inv[:, i] = X.flatten()
 
-    return A_inv
+    return np.matmul(A_inv, P.transpose())
 
 
 def get_R_matrix(A: np.matrix):
-    A_inv = get_inverse(A)
+    A_inv = np.linalg.inv(A)
     E = np.identity(A_inv.shape[0])
-    return np.subtract(np.matmul(A_inv, A), E)
 
+    return np.subtract(np.matmul(A_inv, A), E)
 
 def get_norm(A: np.matrix):
     return np.max([np.sum(np.abs(k)) for k in A], axis=None)
@@ -57,16 +57,23 @@ def construct(eps):
 
 
 def main():
-    eps_arr = [0.1, 0.001, 0.00001, 0.000001]
+    eps_arr = [0.001, 0.00001, 0.000001]
     A_arr = [construct(eps) for eps in eps_arr]
 
     np.set_printoptions(linewidth=150)
 
     for i in range(0, 3):
         print("Epsilon:", eps_arr[i])
+
         print("\t\t\t\t   Matrix:\n", A_arr[i], "\n")
+
+        print("\t\t\t   inverse Matrix:\n", get_inverse(A_arr[i]), "\n")
+
+        print("\t\t\t   A^(-1) * A:\n", np.matmul(get_inverse(A_arr[i]), A_arr[i]), "\n")
+
         print("\t\t\t\t\tR:\n", get_R_matrix(A_arr[i]), "\n")
-        print("Norm:", get_norm(A_arr[i]))
+
+        print("Norm:", get_norm(A_arr[i]
         print("Conditionality:", get_cond(A_arr[i]))
         print("\n", "--" * 40, "\n")
 
