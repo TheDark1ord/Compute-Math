@@ -6,6 +6,11 @@ from tabulate import tabulate
 # Required absolute tolerance for solution
 EPS = 0.00001
 
+RKF45_FIRST_STEP_ERR = []
+EULER_FIRST_STEP_ERR = []
+RKF45_GLOBAL_ERR = []
+EULER_GLOBAL_ERR = []
+
 
 def func(t, X):
     dX = np.zeros(X.shape)
@@ -44,15 +49,25 @@ def evaluate(h, rang):
     global Y_EULER
     global Y_EULER_ERR
 
+    global RKF45_FIRST_STEP_ERR
+    global EULER_FIRST_STEP_ERR
+    global RKF45_GLOBAL_ERR
+    global EULER_GLOBAL_ERR
+
     x0 = np.array([1, -1])
     T = np.arange(rang[0], rang[1] + h, h)
     Y_EXACT = func_exact(T)
 
     Y_RKF45, Y_DER_RKF45 = RKF45(func, T, x0)
     Y_RKF45_ERR = Y_RKF45 - Y_EXACT
+    RKF45_FIRST_STEP_ERR.append(Y_RKF45_ERR[1])
+    RKF45_GLOBAL_ERR.append(np.sum(Y_RKF45_ERR))
 
     Y_EULER = eulers_method(func, T, x0)
     Y_EULER_ERR = Y_EULER - Y_EXACT
+    EULER_FIRST_STEP_ERR.append(Y_EULER_ERR[1])
+    EULER_GLOBAL_ERR.append(np.sum(Y_EULER_ERR))
+
 
 def draw_graphs(values, titles, output_filename):
     fig, *ax = plt.subplots(nrows=1, ncols=len(values))
@@ -85,10 +100,25 @@ def print_table():
         table.append([round(T[it], 5), Y_EXACT[it], Y_RKF45[it], Y_RKF45_ERR[it], Y_EULER[it], Y_EULER_ERR[it]])
 
     print(tabulate(table, column_titles, 'pretty'))
-    print("RKF45 global err:", np.sum(Y_RKF45_ERR))
-    print("Euler global err:", np.sum(Y_EULER_ERR))
 
-    print("\n\n")
+def print_table_errors():
+    column_titles = ["h", "RKF45 local err", "Euler local err", "RKF45 global err", "Euler global err"]
+    h_values = [0.1, 0.05, 0.025, 0.0125]
+    table = []
+
+    for i in range(len(h_values)):
+        table.append((h_values[i], RKF45_FIRST_STEP_ERR[i],EULER_FIRST_STEP_ERR[i],
+                RKF45_GLOBAL_ERR[i], EULER_GLOBAL_ERR[i]))
+    print(tabulate(table, column_titles, 'pretty'))
+
+
+def print_table_exact():
+    table = []
+
+    for i in range(len(sample_values)):
+        table.append([round(T[it], 5), Y_EXACT[it], Y_RKF45[it], Y_RKF45_ERR[it], Y_EULER[it], Y_EULER_ERR[it]])
+
+    print(tabulate(table, column_titles, 'pretty'))
 
 def main():
     evaluate(0.1, [1, 2])
@@ -104,6 +134,7 @@ def main():
     )
     print("h = 0.1")
     print_table()
+    print("\n\n")
 
     evaluate(0.05, [1, 2])
     draw_graphs(
@@ -118,6 +149,7 @@ def main():
     )
     print("h = 0.05")
     print_table()
+    print("\n\n")
 
     evaluate(0.025, [1, 2])
     draw_graphs(
@@ -132,6 +164,7 @@ def main():
     )
     print("h = 0.025")
     print_table()
+    print("\n\n")
 
     evaluate(0.0125, [1, 2])
     draw_graphs(
@@ -146,6 +179,9 @@ def main():
     )
     print("h = 0.0125")
     print_table()
+    print("\n\n")
+
+    print_table_errors()
 
 
 if __name__ == "__main__":

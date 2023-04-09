@@ -2,6 +2,7 @@ import numpy as np
 from scipy.integrate import quad
 import matplotlib.pyplot as plt
 from tabulate import tabulate
+import PyQt5
 
 INTEGRAL_FUNC_1 = lambda x : np.power(np.abs(1 - np.power(x, 2)), -1)
 INTEGRAL_FUNC_2 = lambda x : np.power(np.abs(1 - np.power(x, 2)), -0.5)
@@ -11,7 +12,7 @@ END = 2.14
 
 
 def draw_func():
-    func_x = np.arange(START + 0.001, END + 0.01, 0.01) 
+    func_x = np.arange(START + 0.001, END + 0.01, 0.01)
 
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
     fig.set_figwidth(10)
@@ -44,7 +45,7 @@ def get_integral_value(func, eps):
 
 def main():
     draw_func()
-    
+
     eps_val = []
     integ_val_1 = []
     integ_val_2 = []
@@ -56,7 +57,7 @@ def main():
 
         eps_val.append("1e-" + str(i+1))
         eps = eps / 10
-    
+
     print_table(["eps", "integral, m=-1", "integral, m=-0.5"], (eps_val, integ_val_1, integ_val_2))
 
 if __name__ == "__main__":
